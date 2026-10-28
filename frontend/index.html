@@ -1,0 +1,3755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LabFind - Smart Laboratory Equipment Finder</title>
+
+<style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+:root {
+    --primary: #6c5ce7;
+    --primary-dark: #5848d8;
+    --secondary: #00cec9;
+    --success: #00b894;
+    --danger: #d63031;
+    --warning: #fdcb6e;
+    --dark: #151827;
+    --dark2: #202337;
+    --light: #f5f7fb;
+    --white: #ffffff;
+    --text: #25283d;
+    --muted: #777d91;
+    --border: #e6e8f0;
+    --shadow: 0 10px 30px rgba(30, 35, 70, 0.08);
+}
+
+body {
+    background: var(--light);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* =========================================================
+   LOGIN SCREEN
+========================================================= */
+
+.login-screen {
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 10% 20%, rgba(108,92,231,.35), transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(0,206,201,.25), transparent 30%),
+        #111525;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.login-box {
+    width: 430px;
+    max-width: 92%;
+    padding: 42px;
+    background: rgba(255,255,255,.96);
+    border-radius: 25px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.35);
+    text-align: center;
+    animation: popup .5s ease;
+}
+
+@keyframes popup {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.login-logo {
+    width: 75px;
+    height: 75px;
+    margin: auto;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    color: white;
+}
+
+.login-box h1 {
+    margin-top: 20px;
+    font-size: 28px;
+}
+
+.login-box p {
+    color: var(--muted);
+    margin: 8px 0 25px;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 17px;
+}
+
+.input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 7px;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    transition: .3s;
+    background: white;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(108,92,231,.1);
+}
+
+.login-btn {
+    width: 100%;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), #8e7dff);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(108,92,231,.3);
+}
+
+.demo-text {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #999;
+}
+
+/* =========================================================
+   APPLICATION
+========================================================= */
+
+.app {
+    display: none;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background: linear-gradient(180deg, #171a2d, #111321);
+    color: white;
+    padding: 25px 15px;
+    z-index: 1000;
+    transition: .3s;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 10px 30px;
+}
+
+.brand-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.brand h2 {
+    font-size: 19px;
+}
+
+.brand small {
+    color: #8e93a8;
+}
+
+.nav-title {
+    font-size: 10px;
+    color: #777d96;
+    padding: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 15px;
+    margin: 4px 0;
+    border-radius: 12px;
+    color: #b9bdd0;
+    cursor: pointer;
+    transition: .25s;
+    font-size: 14px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: linear-gradient(90deg, rgba(108,92,231,.25), rgba(0,206,201,.08));
+    color: white;
+}
+
+.nav-item.active {
+    border-left: 3px solid var(--secondary);
+}
+
+.nav-icon {
+    width: 22px;
+    text-align: center;
+}
+
+.sidebar-bottom {
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+    right: 15px;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main {
+    margin-left: 250px;
+    min-height: 100vh;
+}
+
+.topbar {
+    height: 75px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 500;
+}
+
+.menu-btn {
+    display: none;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.top-search {
+    width: 350px;
+    position: relative;
+}
+
+.top-search input {
+    width: 100%;
+    padding: 12px 18px 12px 42px;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 12px;
+    color: var(--muted);
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon-btn {
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    position: relative;
+}
+
+.notification-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--danger);
+    border-radius: 50%;
+    right: 8px;
+    top: 8px;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.profile-info strong {
+    display: block;
+    font-size: 13px;
+}
+
+.profile-info small {
+    color: var(--muted);
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.content {
+    padding: 30px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: fade .35s ease;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 27px;
+}
+
+.page-header p {
+    color: var(--muted);
+    margin-top: 5px;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, var(--primary), #8e7dff);
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 11px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(108,92,231,.25);
+}
+
+.secondary-btn {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 11px 17px;
+    border-radius: 11px;
+    cursor: pointer;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+    padding: 28px;
+    border-radius: 22px;
+    color: white;
+    background:
+        linear-gradient(135deg, rgba(30,32,66,.95), rgba(71,59,150,.94)),
+        radial-gradient(circle at right, #00cec9, transparent);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.hero::after {
+    content: "🧪";
+    position: absolute;
+    right: 40px;
+    bottom: -30px;
+    font-size: 150px;
+    opacity: .08;
+}
+
+.hero h2 {
+    font-size: 27px;
+    margin-bottom: 8px;
+}
+
+.hero p {
+    color: #d8daf0;
+    max-width: 650px;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.hero .primary-btn {
+    background: white;
+    color: var(--primary);
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+    padding: 21px;
+    border-radius: 17px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-card h3 {
+    font-size: 25px;
+    margin-bottom: 4px;
+}
+
+.stat-card p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    background: #eeeaff;
+}
+
+/* =========================================================
+   DASHBOARD GRID
+========================================================= */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.panel {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.panel-header h3 {
+    font-size: 17px;
+}
+
+.panel-header span {
+    color: var(--primary);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* =========================================================
+   EQUIPMENT
+========================================================= */
+
+.filter-bar {
+    background: white;
+    padding: 18px;
+    border-radius: 17px;
+    border: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.filter-search {
+    flex: 1;
+    min-width: 220px;
+    position: relative;
+}
+
+.filter-search input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+}
+
+.filter-bar select {
+    padding: 11px 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    background: white;
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.equipment-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: .3s;
+    position: relative;
+}
+
+.equipment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(20,25,60,.12);
+}
+
+.equipment-image {
+    height: 145px;
+    background: linear-gradient(135deg, #edeaff, #e5fbfa);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 65px;
+}
+
+.equipment-content {
+    padding: 17px;
+}
+
+.equipment-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.equipment-title h3 {
+    font-size: 16px;
+}
+
+.favorite {
+    border: none;
+    background: none;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.favorite.active {
+    color: #ff4757;
+}
+
+.category {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.equipment-info {
+    margin-top: 14px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 7px 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.status {
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.status.available {
+    background: #e5faf4;
+    color: #00a878;
+}
+
+.status.busy {
+    background: #fff4db;
+    color: #bd7900;
+}
+
+.status.maintenance {
+    background: #ffe8e8;
+    color: #d63031;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.card-actions button {
+    flex: 1;
+    padding: 9px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.card-actions .book {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+
+th {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+tbody tr:hover {
+    background: #fafaff;
+}
+
+/* =========================================================
+   ACTIVITY
+========================================================= */
+
+.activity {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.activity:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #eeeaff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.activity-text {
+    flex: 1;
+}
+
+.activity-text strong {
+    font-size: 13px;
+}
+
+.activity-text p {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+/* =========================================================
+   ROOM CARDS
+========================================================= */
+
+.room-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.room-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+}
+
+.room-top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.room-icon {
+    width: 48px;
+    height: 48px;
+    background: #eeeaff;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.progress {
+    margin-top: 15px;
+    height: 8px;
+    border-radius: 20px;
+    background: #eceef5;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 20px;
+}
+
+/* =========================================================
+   BOOKINGS
+========================================================= */
+
+.booking-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 17px;
+    margin-bottom: 12px;
+}
+
+.booking-left {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.booking-icon {
+    width: 50px;
+    height: 50px;
+    background: #eeeaff;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+}
+
+.booking-info h3 {
+    font-size: 14px;
+}
+
+.booking-info p {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(12,15,30,.65);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    background: white;
+    width: 550px;
+    max-width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 22px;
+    padding: 27px;
+    animation: popup .3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    border: none;
+    background: #f2f3f8;
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    flex: 1;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast-container {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    z-index: 5000;
+}
+
+.toast {
+    background: #191c2f;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-top: 10px;
+    min-width: 280px;
+    box-shadow: 0 15px 30px rgba(0,0,0,.2);
+    animation: toastIn .3s ease;
+}
+
+@keyframes toastIn {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark {
+    background: #10121d;
+    color: #f2f3fa;
+}
+
+body.dark .topbar,
+body.dark .panel,
+body.dark .stat-card,
+body.dark .equipment-card,
+body.dark .room-card,
+body.dark .booking-card,
+body.dark .filter-bar {
+    background: #1a1d2d;
+    border-color: #2b2f43;
+}
+
+body.dark .top-search input,
+body.dark .filter-search input,
+body.dark .filter-bar select,
+body.dark .input-group input,
+body.dark .input-group select,
+body.dark .input-group textarea {
+    background: #24283a;
+    color: white;
+    border-color: #363b52;
+}
+
+body.dark .secondary-btn,
+body.dark .card-actions button,
+body.dark .icon-btn {
+    background: #24283a;
+    color: white;
+    border-color: #363b52;
+}
+
+body.dark .equipment-image,
+body.dark .room-icon,
+body.dark .booking-icon,
+body.dark .activity-icon {
+    background: #272b42;
+}
+
+body.dark th,
+body.dark td {
+    border-color: #2d3145;
+}
+
+body.dark tbody tr:hover {
+    background: #22263a;
+}
+
+body.dark .modal-box {
+    background: #1a1d2d;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .equipment-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .room-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .top-search {
+        display: none;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .content {
+        padding: 18px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .equipment-grid,
+    .room-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        gap: 10px;
+        flex-direction: column;
+    }
+
+    .profile-info {
+        display: none;
+    }
+
+    .hero h2 {
+        font-size: 21px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<div class="login-screen" id="loginScreen">
+
+    <div class="login-box">
+
+        <div class="login-logo">
+            🧪
+        </div>
+
+        <h1>LabFind</h1>
+
+        <p>Smart Laboratory Equipment Finding System</p>
+
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter username">
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+        </div>
+
+        <button class="login-btn" onclick="login()">
+            Login to Laboratory
+        </button>
+
+        <div class="demo-text">
+            Demo login: enter any username and password
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     APPLICATION
+===================================================== -->
+
+<div class="app" id="app">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🧪
+        </div>
+
+        <div>
+            <h2>LabFind</h2>
+            <small>Smart Lab System</small>
+        </div>
+
+    </div>
+
+    <div class="nav-title">Main Menu</div>
+
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+        <span class="nav-icon">🏠</span>
+        Dashboard
+    </div>
+
+    <div class="nav-item" onclick="showPage('equipment', this)">
+        <span class="nav-icon">🔬</span>
+        Find Equipment
+    </div>
+
+    <div class="nav-item" onclick="showPage('bookings', this)">
+        <span class="nav-icon">📅</span>
+        My Bookings
+    </div>
+
+    <div class="nav-item" onclick="showPage('rooms', this)">
+        <span class="nav-icon">🏢</span>
+        Laboratory Rooms
+    </div>
+
+    <div class="nav-item" onclick="showPage('favorites', this)">
+        <span class="nav-icon">⭐</span>
+        Favorites
+    </div>
+
+    <div class="nav-title">Management</div>
+
+    <div class="nav-item" onclick="showPage('equipment', this); openAddModal()">
+        <span class="nav-icon">➕</span>
+        Add Equipment
+    </div>
+
+    <div class="nav-item" onclick="showPage('activity', this)">
+        <span class="nav-icon">📊</span>
+        Activity
+    </div>
+
+    <div class="nav-title">System</div>
+
+    <div class="nav-item" onclick="toggleDarkMode()">
+        <span class="nav-icon">🌙</span>
+        Dark Mode
+    </div>
+
+    <div class="nav-item" onclick="showAbout()">
+        <span class="nav-icon">ℹ️</span>
+        About Project
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <div class="nav-item" onclick="logout()">
+            <span class="nav-icon">🚪</span>
+            Logout
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+<!-- TOPBAR -->
+
+<header class="topbar">
+
+    <button class="menu-btn" onclick="toggleSidebar()">
+        ☰
+    </button>
+
+    <div class="top-search">
+
+        <span class="search-icon">🔍</span>
+
+        <input
+            type="text"
+            placeholder="Search laboratory equipment..."
+            onkeyup="globalSearch(this.value)"
+        >
+
+    </div>
+
+    <div class="top-actions">
+
+        <button class="icon-btn" onclick="showNotifications()">
+            🔔
+            <span class="notification-dot"></span>
+        </button>
+
+        <button class="icon-btn" onclick="toggleDarkMode()">
+            🌙
+        </button>
+
+        <div class="profile">
+
+            <div class="avatar" id="avatar">
+                A
+            </div>
+
+            <div class="profile-info">
+                <strong id="profileName">Student</strong>
+                <small>Laboratory User</small>
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- CONTENT -->
+
+<div class="content">
+
+
+<!-- =====================================================
+     DASHBOARD PAGE
+===================================================== -->
+
+<section class="page active" id="dashboard">
+
+    <div class="hero">
+
+        <h2>Find the right equipment. Faster. 🔬</h2>
+
+        <p>
+            Welcome to LabFind — a smart laboratory equipment
+            discovery platform that helps students and researchers
+            locate, check and reserve laboratory equipment quickly.
+        </p>
+
+        <div class="hero-buttons">
+
+            <button class="primary-btn"
+                    onclick="showPage('equipment', document.querySelectorAll('.nav-item')[2])">
+                🔍 Find Equipment
+            </button>
+
+            <button class="secondary-btn"
+                    onclick="openAddModal()">
+                ➕ Add Equipment
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div>
+                <h3 id="totalEquipment">12</h3>
+                <p>Total Equipment</p>
+            </div>
+
+            <div class="stat-icon">🔬</div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div>
+                <h3 id="availableEquipment">8</h3>
+                <p>Available Now</p>
+            </div>
+
+            <div class="stat-icon">🟢</div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div>
+                <h3 id="busyEquipment">3</h3>
+                <p>Currently In Use</p>
+            </div>
+
+            <div class="stat-icon">🟠</div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div>
+                <h3 id="maintenanceEquipment">1</h3>
+                <p>Maintenance</p>
+            </div>
+
+            <div class="stat-icon">🔧</div>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h3>Popular Laboratory Equipment</h3>
+
+                <span onclick="showPage('equipment')">
+                    View All →
+                </span>
+
+            </div>
+
+            <div id="popularEquipment"></div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h3>Recent Activity</h3>
+
+            </div>
+
+            <div id="recentActivity"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     EQUIPMENT PAGE
+===================================================== -->
+
+<section class="page" id="equipment">
+
+    <div class="page-header">
+
+        <div>
+            <h1>Find Laboratory Equipment</h1>
+            <p>Search and locate equipment available in your laboratories.</p>
+        </div>
+
+        <button class="primary-btn" onclick="openAddModal()">
+            + Add Equipment
+        </button>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+        <div class="filter-search">
+
+            <span class="search-icon">🔍</span>
+
+            <input
+                type="text"
+                id="equipmentSearch"
+                placeholder="Search equipment name..."
+                oninput="filterEquipment()"
+            >
+
+        </div>
+
+
+        <select id="categoryFilter" onchange="filterEquipment()">
+
+            <option value="all">All Categories</option>
+            <option value="Microscope">Microscope</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Computer">Computer</option>
+            <option value="Biology">Biology</option>
+
+        </select>
+
+
+        <select id="statusFilter" onchange="filterEquipment()">
+
+            <option value="all">All Status</option>
+            <option value="Available">Available</option>
+            <option value="In Use">In Use</option>
+            <option value="Maintenance">Maintenance</option>
+
+        </select>
+
+
+        <select id="roomFilter" onchange="filterEquipment()">
+
+            <option value="all">All Rooms</option>
+            <option value="Lab A-101">Lab A-101</option>
+            <option value="Lab B-204">Lab B-204</option>
+            <option value="Lab C-301">Lab C-301</option>
+            <option value="Lab D-105">Lab D-105</option>
+
+        </select>
+
+    </div>
+
+
+    <div class="equipment-grid" id="equipmentGrid"></div>
+
+</section>
+
+
+<!-- =====================================================
+     BOOKINGS
+===================================================== -->
+
+<section class="page" id="bookings">
+
+    <div class="page-header">
+
+        <div>
+            <h1>My Bookings</h1>
+            <p>Manage your laboratory equipment reservations.</p>
+        </div>
+
+    </div>
+
+    <div id="bookingList"></div>
+
+</section>
+
+
+<!-- =====================================================
+     ROOMS
+===================================================== -->
+
+<section class="page" id="rooms">
+
+    <div class="page-header">
+
+        <div>
+            <h1>Laboratory Rooms</h1>
+            <p>Check equipment availability by laboratory.</p>
+        </div>
+
+    </div>
+
+    <div class="room-grid">
+
+        <div class="room-card">
+
+            <div class="room-top">
+
+                <div>
+                    <h3>Lab A-101</h3>
+                    <p style="color:#777;font-size:12px">
+                        Electronics Laboratory
+                    </p>
+                </div>
+
+                <div class="room-icon">⚡</div>
+
+            </div>
+
+            <p style="margin-top:15px;font-size:13px">
+                12 Equipment
+            </p>
+
+            <div class="progress">
+                <div class="progress-bar" style="width:75%"></div>
+            </div>
+
+            <small style="color:#777">
+                75% equipment available
+            </small>
+
+        </div>
+
+
+        <div class="room-card">
+
+            <div class="room-top">
+
+                <div>
+                    <h3>Lab B-204</h3>
+                    <p style="color:#777;font-size:12px">
+                        Physics Laboratory
+                    </p>
+                </div>
+
+                <div class="room-icon">🔭</div>
+
+            </div>
+
+            <p style="margin-top:15px;font-size:13px">
+                18 Equipment
+            </p>
+
+            <div class="progress">
+                <div class="progress-bar" style="width:65%"></div>
+            </div>
+
+            <small style="color:#777">
+                65% equipment available
+            </small>
+
+        </div>
+
+
+        <div class="room-card">
+
+            <div class="room-top">
+
+                <div>
+                    <h3>Lab C-301</h3>
+                    <p style="color:#777;font-size:12px">
+                        Chemistry Laboratory
+                    </p>
+                </div>
+
+                <div class="room-icon">⚗️</div>
+
+            </div>
+
+            <p style="margin-top:15px;font-size:13px">
+                15 Equipment
+            </p>
+
+            <div class="progress">
+                <div class="progress-bar" style="width:82%"></div>
+            </div>
+
+            <small style="color:#777">
+                82% equipment available
+            </small>
+
+        </div>
+
+
+        <div class="room-card">
+
+            <div class="room-top">
+
+                <div>
+                    <h3>Lab D-105</h3>
+                    <p style="color:#777;font-size:12px">
+                        Computer Laboratory
+                    </p>
+                </div>
+
+                <div class="room-icon">💻</div>
+
+            </div>
+
+            <p style="margin-top:15px;font-size:13px">
+                25 Equipment
+            </p>
+
+            <div class="progress">
+                <div class="progress-bar" style="width:90%"></div>
+            </div>
+
+            <small style="color:#777">
+                90% equipment available
+            </small>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     FAVORITES
+===================================================== -->
+
+<section class="page" id="favorites">
+
+    <div class="page-header">
+
+        <div>
+            <h1>Favorite Equipment</h1>
+            <p>Your frequently used laboratory equipment.</p>
+        </div>
+
+    </div>
+
+    <div class="equipment-grid" id="favoriteGrid"></div>
+
+</section>
+
+
+<!-- =====================================================
+     ACTIVITY
+===================================================== -->
+
+<section class="page" id="activity">
+
+    <div class="page-header">
+
+        <div>
+            <h1>System Activity</h1>
+            <p>Recent activities in the laboratory equipment system.</p>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Activity</th>
+                        <th>Equipment</th>
+                        <th>User</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="activityTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+</div>
+
+</main>
+
+</div>
+
+
+<!-- =====================================================
+     EQUIPMENT MODAL
+===================================================== -->
+
+<div class="modal" id="equipmentModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">Add Equipment</h2>
+
+            <button class="close-btn" onclick="closeModal('equipmentModal')">
+                ✕
+            </button>
+
+        </div>
+
+
+        <input type="hidden" id="editId">
+
+
+        <div class="input-group">
+
+            <label>Equipment Name</label>
+
+            <input
+                type="text"
+                id="equipmentName"
+                placeholder="Example: Digital Microscope"
+            >
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>Category</label>
+
+            <select id="equipmentCategory">
+
+                <option>Microscope</option>
+                <option>Electronics</option>
+                <option>Physics</option>
+                <option>Chemistry</option>
+                <option>Computer</option>
+                <option>Biology</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>Laboratory Room</label>
+
+            <select id="equipmentRoom">
+
+                <option>Lab A-101</option>
+                <option>Lab B-204</option>
+                <option>Lab C-301</option>
+                <option>Lab D-105</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>Status</label>
+
+            <select id="equipmentStatus">
+
+                <option>Available</option>
+                <option>In Use</option>
+                <option>Maintenance</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>Equipment Description</label>
+
+            <textarea
+                id="equipmentDescription"
+                rows="3"
+                placeholder="Enter equipment description..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="modal-buttons">
+
+            <button
+                class="secondary-btn"
+                onclick="closeModal('equipmentModal')">
+                Cancel
+            </button>
+
+            <button
+                class="primary-btn"
+                onclick="saveEquipment()">
+                Save Equipment
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     DETAILS MODAL
+===================================================== -->
+
+<div class="modal" id="detailsModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2 id="detailsName">Equipment</h2>
+
+            <button class="close-btn" onclick="closeModal('detailsModal')">
+                ✕
+            </button>
+
+        </div>
+
+        <div id="detailsContent"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     BOOKING MODAL
+===================================================== -->
+
+<div class="modal" id="bookingModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>Reserve Equipment</h2>
+
+            <button class="close-btn" onclick="closeModal('bookingModal')">
+                ✕
+            </button>
+
+        </div>
+
+        <input type="hidden" id="bookingEquipmentId">
+
+        <div class="input-group">
+
+            <label>Equipment</label>
+
+            <input id="bookingEquipmentName" readonly>
+
+        </div>
+
+        <div class="input-group">
+
+            <label>Booking Date</label>
+
+            <input type="date" id="bookingDate">
+
+        </div>
+
+        <div class="input-group">
+
+            <label>Start Time</label>
+
+            <input type="time" id="bookingTime">
+
+        </div>
+
+        <div class="input-group">
+
+            <label>Duration</label>
+
+            <select id="bookingDuration">
+
+                <option>30 Minutes</option>
+                <option>1 Hour</option>
+                <option>2 Hours</option>
+                <option>3 Hours</option>
+
+            </select>
+
+        </div>
+
+        <div class="modal-buttons">
+
+            <button
+                class="secondary-btn"
+                onclick="closeModal('bookingModal')">
+                Cancel
+            </button>
+
+            <button
+                class="primary-btn"
+                onclick="confirmBooking()">
+                Confirm Booking
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div class="toast-container" id="toastContainer"></div>
+
+
+<script>
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let equipment = [
+
+    {
+        id: 1,
+        name: "Digital Microscope",
+        category: "Microscope",
+        room: "Lab C-301",
+        status: "Available",
+        icon: "🔬",
+        description: "High-resolution digital microscope for biological and material analysis.",
+        favorite: true
+    },
+
+    {
+        id: 2,
+        name: "Oscilloscope",
+        category: "Electronics",
+        room: "Lab A-101",
+        status: "Available",
+        icon: "📟",
+        description: "Digital oscilloscope used for measuring electrical signals.",
+        favorite: true
+    },
+
+    {
+        id: 3,
+        name: "Centrifuge Machine",
+        category: "Biology",
+        room: "Lab C-301",
+        status: "In Use",
+        icon: "⚙️",
+        description: "Laboratory centrifuge for separating components of samples.",
+        favorite: false
+    },
+
+    {
+        id: 4,
+        name: "Digital Multimeter",
+        category: "Electronics",
+        room: "Lab A-101",
+        status: "Available",
+        icon: "📟",
+        description: "Digital instrument for measuring voltage, current and resistance.",
+        favorite: true
+    },
+
+    {
+        id: 5,
+        name: "Spectrophotometer",
+        category: "Chemistry",
+        room: "Lab C-301",
+        status: "Maintenance",
+        icon: "🧪",
+        description: "Instrument used to measure light intensity and chemical concentration.",
+        favorite: false
+    },
+
+    {
+        id: 6,
+        name: "Function Generator",
+        category: "Electronics",
+        room: "Lab A-101",
+        status: "Available",
+        icon: "📈",
+        description: "Generates electrical waveforms for electronics experiments.",
+        favorite: false
+    },
+
+    {
+        id: 7,
+        name: "Laser Kit",
+        category: "Physics",
+        room: "Lab B-204",
+        status: "Available",
+        icon: "🔴",
+        description: "Laser experimental kit used for optics and physics experiments.",
+        favorite: false
+    },
+
+    {
+        id: 8,
+        name: "Thermal Analyzer",
+        category: "Physics",
+        room: "Lab B-204",
+        status: "In Use",
+        icon: "🌡️",
+        description: "Equipment for studying thermal characteristics of materials.",
+        favorite: false
+    },
+
+    {
+        id: 9,
+        name: "3D Printer",
+        category: "Computer",
+        room: "Lab D-105",
+        status: "Available",
+        icon: "🖨️",
+        description: "3D printer for rapid prototyping and model creation.",
+        favorite: true
+    },
+
+    {
+        id: 10,
+        name: "pH Meter",
+        category: "Chemistry",
+        room: "Lab C-301",
+        status: "Available",
+        icon: "⚗️",
+        description: "Digital pH measurement device for chemical experiments.",
+        favorite: false
+    },
+
+    {
+        id: 11,
+        name: "Arduino Kit",
+        category: "Computer",
+        room: "Lab D-105",
+        status: "Available",
+        icon: "💻",
+        description: "Arduino development kit for embedded systems projects.",
+        favorite: false
+    },
+
+    {
+        id: 12,
+        name: "Digital Weighing Scale",
+        category: "Chemistry",
+        room: "Lab C-301",
+        status: "In Use",
+        icon: "⚖️",
+        description: "Precision digital weighing equipment for laboratory samples.",
+        favorite: false
+    }
+
+];
+
+
+let bookings = [
+
+    {
+        equipment: "Digital Microscope",
+        date: "2026-09-24",
+        time: "10:00",
+        duration: "1 Hour",
+        status: "Confirmed"
+    },
+
+    {
+        equipment: "Oscilloscope",
+        date: "2026-09-26",
+        time: "14:00",
+        duration: "2 Hours",
+        status: "Confirmed"
+    }
+
+];
+
+
+let activities = [
+
+    {
+        activity: "Equipment Reserved",
+        equipment: "Digital Microscope",
+        user: "Student",
+        date: "Today",
+        status: "Completed"
+    },
+
+    {
+        activity: "Equipment Viewed",
+        equipment: "Oscilloscope",
+        user: "Student",
+        date: "Today",
+        status: "Completed"
+    },
+
+    {
+        activity: "Equipment Added",
+        equipment: "Arduino Kit",
+        user: "Lab Admin",
+        date: "Yesterday",
+        status: "Completed"
+    }
+
+];
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", async function() {
+
+    loadData();
+
+    await loadEquipmentFromBackend();
+
+    renderEquipment();
+
+    renderPopular();
+
+    renderBookings();
+
+    renderFavorites();
+
+    renderActivity();
+
+    updateStats();
+
+});
+async function loadEquipmentFromBackend() {
+
+    try {
+
+        const response = await fetch("/api/equipment");
+
+        const data = await response.json();
+
+        equipment = data.map(item => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            room: item.room,
+            status: item.status,
+            icon: getCategoryIcon(item.category),
+            description: item.description,
+            favorite: false
+        }));
+
+        console.log("Equipment loaded from database:", equipment);
+
+    } catch (error) {
+
+        console.error("Could not load equipment:", error);
+
+        showToast("Could not connect to equipment database.");
+
+    }
+}
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        alert("Please enter username and password");
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            localStorage.setItem("userId", data.user.id);
+            localStorage.setItem("username", data.user.username);
+            localStorage.setItem("role", data.user.role);
+
+            alert("Login successful!");
+
+            // Continue with your existing dashboard display
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("app").style.display = "block";
+
+            const profileName = document.getElementById("profileName");
+            if (profileName) {
+                profileName.textContent = data.user.username;
+            }
+
+            const profileAvatar = document.getElementById("profileAvatar");
+            if (profileAvatar) {
+                profileAvatar.textContent =
+                    data.user.username.charAt(0).toUpperCase();
+            }
+
+        } else {
+            alert(data.message);
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Cannot connect to the backend. Make sure Flask is running.");
+    }
+}
+
+
+function logout() {
+
+    document.getElementById("app").style.display = "none";
+
+    document.getElementById("loginScreen").style.display = "flex";
+
+    document.getElementById("password").value = "";
+
+}
+
+
+/* =========================================================
+   PAGE NAVIGATION
+========================================================= */
+
+function showPage(pageId, clickedItem) {
+
+    document.querySelectorAll(".page").forEach(page => {
+
+        page.classList.remove("active");
+
+    });
+
+    const target = document.getElementById(pageId);
+
+    if (target) {
+
+        target.classList.add("active");
+
+    }
+
+
+    document.querySelectorAll(".nav-item").forEach(item => {
+
+        item.classList.remove("active");
+
+    });
+
+
+    if (clickedItem) {
+
+        clickedItem.classList.add("active");
+
+    }
+
+
+    if (pageId === "equipment") {
+
+        renderEquipment();
+
+    }
+
+    if (pageId === "favorites") {
+
+        renderFavorites();
+
+    }
+
+    if (pageId === "bookings") {
+
+        renderBookings();
+
+    }
+
+    if (pageId === "activity") {
+
+        renderActivity();
+
+    }
+
+
+    document.getElementById("sidebar").classList.remove("open");
+
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+function toggleSidebar() {
+
+    document.getElementById("sidebar").classList.toggle("open");
+
+}
+
+
+/* =========================================================
+   EQUIPMENT RENDER
+========================================================= */
+
+function renderEquipment(list = equipment) {
+
+    const grid =
+        document.getElementById("equipmentGrid");
+
+    grid.innerHTML = "";
+
+
+    if (list.length === 0) {
+
+        grid.innerHTML = `
+            <div class="panel" style="grid-column:1/-1;text-align:center;padding:50px">
+                <div style="font-size:50px">🔍</div>
+                <h3>No equipment found</h3>
+                <p style="color:#777;margin-top:8px">
+                    Try another search or category.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    list.forEach(item => {
+
+        const card = document.createElement("div");
+
+        card.className = "equipment-card";
+
+
+        card.innerHTML = `
+
+            <div class="equipment-image">
+                ${item.icon}
+            </div>
+
+            <div class="equipment-content">
+
+                <div class="equipment-title">
+
+                    <div>
+
+                        <h3>${item.name}</h3>
+
+                        <div class="category">
+                            ${item.category}
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="favorite ${item.favorite ? "active" : ""}"
+                        onclick="toggleFavorite(${item.id})">
+
+                        ${item.favorite ? "♥" : "♡"}
+
+                    </button>
+
+                </div>
+
+
+                <div class="equipment-info">
+
+                    <div class="info-row">
+                        <span>Location</span>
+                        <strong>${item.room}</strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Status</span>
+
+                        <span class="status
+                            ${item.status === "Available"
+                                ? "available"
+                                : item.status === "In Use"
+                                ? "busy"
+                                : "maintenance"}">
+
+                            ${item.status}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-actions">
+
+                    <button onclick="showDetails(${item.id})">
+                        Details
+                    </button>
+
+                    <button
+                        class="book"
+                        onclick="openBooking(${item.id})"
+                        ${item.status !== "Available" ? "disabled style='opacity:.5;cursor:not-allowed'" : ""}>
+
+                        ${item.status === "Available"
+                            ? "Reserve"
+                            : item.status}
+
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+function filterEquipment() {
+
+    const search =
+        document.getElementById("equipmentSearch")
+            .value
+            .toLowerCase();
+
+    const category =
+        document.getElementById("categoryFilter").value;
+
+    const status =
+        document.getElementById("statusFilter").value;
+
+    const room =
+        document.getElementById("roomFilter").value;
+
+
+    const filtered = equipment.filter(item => {
+
+        const matchesSearch =
+            item.name.toLowerCase().includes(search) ||
+            item.category.toLowerCase().includes(search);
+
+        const matchesCategory =
+            category === "all" ||
+            item.category === category;
+
+        const matchesStatus =
+            status === "all" ||
+            item.status === status;
+
+        const matchesRoom =
+            room === "all" ||
+            item.room === room;
+
+        return matchesSearch &&
+               matchesCategory &&
+               matchesStatus &&
+               matchesRoom;
+
+    });
+
+
+    renderEquipment(filtered);
+
+}
+
+
+/* =========================================================
+   GLOBAL SEARCH
+========================================================= */
+
+function globalSearch(value) {
+
+    const equipmentPage =
+        document.getElementById("equipment");
+
+    if (!equipmentPage.classList.contains("active")) {
+
+        showPage("equipment");
+
+    }
+
+    document.getElementById("equipmentSearch").value = value;
+
+    filterEquipment();
+
+}
+
+
+/* =========================================================
+   FAVORITE
+========================================================= */
+
+async function toggleFavorite(id) {
+
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+        showToast("Please login first.");
+        return;
+    }
+
+    const item = equipment.find(e => e.id === id);
+
+    if (!item) return;
+
+    try {
+
+        if (!item.favorite) {
+
+            const response = await fetch("/api/favorites", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: parseInt(userId),
+                    equipment_id: id
+                })
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                showToast(data.message);
+                return;
+            }
+
+            item.favorite = true;
+
+            showToast("Added to favorites ⭐");
+
+        } else {
+
+            // Remove favorite from database
+            const response = await fetch(
+                `/api/favorites/${userId}/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+                showToast(data.message);
+                return;
+            }
+
+            item.favorite = false;
+
+            showToast("Removed from favorites");
+
+        }
+
+        renderEquipment();
+        renderFavorites();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast("Could not connect to favorites server.");
+    }
+}
+
+
+/* =========================================================
+   FAVORITES
+========================================================= */
+
+function renderFavorites() {
+
+    const grid =
+        document.getElementById("favoriteGrid");
+
+    const favorites =
+        equipment.filter(item => item.favorite);
+
+    grid.innerHTML = "";
+
+
+    if (favorites.length === 0) {
+
+        grid.innerHTML = `
+            <div class="panel"
+                 style="grid-column:1/-1;text-align:center;padding:50px">
+
+                <div style="font-size:50px">⭐</div>
+
+                <h3>No favorite equipment</h3>
+
+                <p style="color:#777;margin-top:8px">
+                    Click the heart icon to add equipment.
+                </p>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    favorites.forEach(item => {
+
+        const card = document.createElement("div");
+
+        card.className = "equipment-card";
+
+        card.innerHTML = `
+
+            <div class="equipment-image">
+                ${item.icon}
+            </div>
+
+            <div class="equipment-content">
+
+                <div class="equipment-title">
+
+                    <div>
+                        <h3>${item.name}</h3>
+
+                        <div class="category">
+                            ${item.category}
+                        </div>
+                    </div>
+
+                    <button
+                        class="favorite active"
+                        onclick="toggleFavorite(${item.id})">
+                        ♥
+                    </button>
+
+                </div>
+
+                <div class="equipment-info">
+
+                    <div class="info-row">
+                        <span>Room</span>
+                        <strong>${item.room}</strong>
+                    </div>
+
+                    <div class="info-row">
+
+                        <span>Status</span>
+
+                        <span class="status available">
+                            ${item.status}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="card-actions">
+
+                    <button onclick="showDetails(${item.id})">
+                        Details
+                    </button>
+
+                    <button
+                        class="book"
+                        onclick="openBooking(${item.id})">
+                        Reserve
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+function showDetails(id) {
+
+    const item =
+        equipment.find(e => e.id === id);
+
+    if (!item) return;
+
+
+    document.getElementById("detailsName").textContent =
+        item.name;
+
+
+    document.getElementById("detailsContent").innerHTML = `
+
+        <div style="
+            background:linear-gradient(135deg,#eeeaff,#e5fbfa);
+            padding:30px;
+            border-radius:18px;
+            text-align:center;
+            font-size:70px;
+            margin-bottom:20px">
+
+            ${item.icon}
+
+        </div>
+
+        <h3>${item.name}</h3>
+
+        <p style="color:#777;margin-top:7px">
+            ${item.description}
+        </p>
+
+        <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+            margin-top:20px">
+
+            <div class="panel">
+                <small>Category</small>
+                <strong>${item.category}</strong>
+            </div>
+
+            <div class="panel">
+                <small>Location</small>
+                <strong>${item.room}</strong>
+            </div>
+
+            <div class="panel">
+                <small>Status</small>
+                <strong>${item.status}</strong>
+            </div>
+
+            <div class="panel">
+                <small>Equipment ID</small>
+                <strong>LAB-${String(item.id).padStart(3,"0")}</strong>
+            </div>
+
+        </div>
+
+        <div class="modal-buttons">
+
+            <button
+                class="secondary-btn"
+                onclick="editEquipment(${item.id})">
+                Edit
+            </button>
+
+            <button
+                class="primary-btn"
+                onclick="closeModal('detailsModal');openBooking(${item.id})">
+                Reserve Equipment
+            </button>
+
+        </div>
+    `;
+
+
+    document
+        .getElementById("detailsModal")
+        .classList.add("show");
+
+}
+
+
+/* =========================================================
+   ADD EQUIPMENT
+========================================================= */
+
+function openAddModal() {
+
+    document.getElementById("modalTitle").textContent =
+        "Add Equipment";
+
+    document.getElementById("editId").value = "";
+
+    document.getElementById("equipmentName").value = "";
+
+    document.getElementById("equipmentDescription").value = "";
+
+    document.getElementById("equipmentCategory").value =
+        "Microscope";
+
+    document.getElementById("equipmentRoom").value =
+        "Lab A-101";
+
+    document.getElementById("equipmentStatus").value =
+        "Available";
+
+
+    document
+        .getElementById("equipmentModal")
+        .classList.add("show");
+
+}
+
+
+/* =========================================================
+   EDIT EQUIPMENT
+========================================================= */
+
+function editEquipment(id) {
+
+    const item =
+        equipment.find(e => e.id === id);
+
+    if (!item) return;
+
+
+    closeModal("detailsModal");
+
+
+    document.getElementById("modalTitle").textContent =
+        "Edit Equipment";
+
+    document.getElementById("editId").value =
+        item.id;
+
+    document.getElementById("equipmentName").value =
+        item.name;
+
+    document.getElementById("equipmentCategory").value =
+        item.category;
+
+    document.getElementById("equipmentRoom").value =
+        item.room;
+
+    document.getElementById("equipmentStatus").value =
+        item.status;
+
+    document.getElementById("equipmentDescription").value =
+        item.description;
+
+
+    document
+        .getElementById("equipmentModal")
+        .classList.add("show");
+
+}
+
+
+/* =========================================================
+   SAVE EQUIPMENT
+========================================================= */
+
+function saveEquipment() {
+
+    const id =
+        document.getElementById("editId").value;
+
+    const name =
+        document.getElementById("equipmentName")
+            .value
+            .trim();
+
+    const category =
+        document.getElementById("equipmentCategory").value;
+
+    const room =
+        document.getElementById("equipmentRoom").value;
+
+    const status =
+        document.getElementById("equipmentStatus").value;
+
+    const description =
+        document.getElementById("equipmentDescription")
+            .value
+            .trim();
+
+
+    if (!name) {
+
+        showToast("Please enter equipment name.");
+
+        return;
+
+    }
+
+
+    if (id) {
+
+        const item =
+            equipment.find(e => e.id == id);
+
+        item.name = name;
+        item.category = category;
+        item.room = room;
+        item.status = status;
+        item.description =
+            description || "Laboratory equipment.";
+
+        showToast("Equipment updated successfully.");
+
+    } else {
+
+        const newItem = {
+
+            id: Date.now(),
+
+            name: name,
+
+            category: category,
+
+            room: room,
+
+            status: status,
+
+            icon: getCategoryIcon(category),
+
+            description:
+                description || "Laboratory equipment.",
+
+            favorite: false
+
+        };
+
+        equipment.push(newItem);
+
+        showToast("New equipment added successfully.");
+
+    }
+
+
+    saveData();
+
+    renderEquipment();
+
+    renderPopular();
+
+    renderFavorites();
+
+    updateStats();
+
+    closeModal("equipmentModal");
+
+}
+
+
+/* =========================================================
+   CATEGORY ICON
+========================================================= */
+
+function getCategoryIcon(category) {
+
+    const icons = {
+
+        Microscope: "🔬",
+
+        Electronics: "📟",
+
+        Physics: "🔭",
+
+        Chemistry: "⚗️",
+
+        Computer: "💻",
+
+        Biology: "🧬"
+
+    };
+
+    return icons[category] || "🧪";
+
+}
+
+
+/* =========================================================
+   BOOKING
+========================================================= */
+
+function openBooking(id) {
+
+    const item =
+        equipment.find(e => e.id === id);
+
+    if (!item) return;
+
+
+    if (item.status !== "Available") {
+
+        showToast("This equipment is not currently available.");
+
+        return;
+
+    }
+
+
+    document.getElementById("bookingEquipmentId").value =
+        id;
+
+    document.getElementById("bookingEquipmentName").value =
+        item.name;
+
+
+    const today =
+        new Date().toISOString().split("T")[0];
+
+    document.getElementById("bookingDate").value =
+        today;
+
+
+    document.getElementById("bookingTime").value =
+        "10:00";
+
+
+    document
+        .getElementById("bookingModal")
+        .classList.add("show");
+
+}
+
+async function confirmBooking() {
+
+    const equipmentId =
+        document.getElementById("bookingEquipmentId").value;
+
+    const date =
+        document.getElementById("bookingDate").value;
+
+    const time =
+        document.getElementById("bookingTime").value;
+
+    const duration =
+        document.getElementById("bookingDuration").value;
+
+    const item =
+        equipment.find(e => e.id == equipmentId);
+
+    if (!date || !time) {
+        showToast("Please select date and time.");
+        return;
+    }
+
+    const userId =
+        localStorage.getItem("userId");
+
+    if (!userId) {
+        showToast("Please login first.");
+        return;
+    }
+
+    // Calculate ending time
+    const start = new Date(`2000-01-01T${time}:00`);
+    const hours = parseInt(duration) || 1;
+
+    start.setHours(start.getHours() + hours);
+
+    const endTime =
+        start.toTimeString().slice(0, 5);
+
+    try {
+
+        const response = await fetch("/api/bookings", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                user_id: parseInt(userId),
+
+                equipment_id: parseInt(equipmentId),
+
+                booking_date: date,
+
+                start_time: time,
+
+                end_time: endTime,
+
+                purpose: "Laboratory equipment usage"
+
+            })
+
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            closeModal("bookingModal");
+
+            showToast("Equipment reserved successfully! 📅");
+
+            // Refresh bookings from database
+            await loadBookingsFromBackend();
+
+        } else {
+
+            showToast(data.message);
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Could not connect to booking server."
+        );
+    }
+}
+async function loadBookingsFromBackend() {
+
+    const userId =
+        localStorage.getItem("userId");
+
+    if (!userId) return;
+
+    try {
+
+        const response =
+            await fetch(`/api/bookings/${userId}`);
+
+        const data =
+            await response.json();
+
+        bookings = data.map(item => ({
+
+            equipment: item.equipment_name,
+
+            date: item.booking_date,
+
+            time: item.start_time,
+
+            duration: `${item.start_time} - ${item.end_time}`,
+
+            status: item.status
+
+        }));
+
+        renderBookings();
+
+    } catch (error) {
+
+        console.error(
+            "Could not load bookings:",
+            error
+        );
+
+    }
+}
+
+/* =========================================================
+   BOOKINGS RENDER
+========================================================= */
+
+function renderBookings() {
+
+    const list =
+        document.getElementById("bookingList");
+
+    list.innerHTML = "";
+
+
+    if (bookings.length === 0) {
+
+        list.innerHTML = `
+            <div class="panel"
+                 style="text-align:center;padding:50px">
+
+                <div style="font-size:50px">📅</div>
+
+                <h3>No bookings yet</h3>
+
+                <p style="color:#777;margin-top:8px">
+                    Reserve equipment from the Find Equipment page.
+                </p>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    bookings.forEach((booking, index) => {
+
+        list.innerHTML += `
+
+            <div class="booking-card">
+
+                <div class="booking-left">
+
+                    <div class="booking-icon">
+                        🔬
+                    </div>
+
+                    <div class="booking-info">
+
+                        <h3>
+                            ${booking.equipment}
+                        </h3>
+
+                        <p>
+                            📅 ${booking.date}
+                            &nbsp; | &nbsp;
+                            🕐 ${booking.time}
+                            &nbsp; | &nbsp;
+                            ⏱ ${booking.duration}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <span class="status available">
+                        ${booking.status}
+                    </span>
+
+                    <button
+                        class="secondary-btn"
+                        style="margin-left:8px"
+                        onclick="cancelBooking(${index})">
+
+                        Cancel
+
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+    });
+
+}
+
+
+/* =========================================================
+   CANCEL BOOKING
+========================================================= */
+
+function cancelBooking(index) {
+
+    if (!confirm("Cancel this booking?")) return;
+
+    bookings.splice(index, 1);
+
+    saveData();
+
+    renderBookings();
+
+    showToast("Booking cancelled.");
+
+}
+
+
+/* =========================================================
+   POPULAR
+========================================================= */
+
+function renderPopular() {
+
+    const container =
+        document.getElementById("popularEquipment");
+
+    const popular =
+        equipment.slice(0, 5);
+
+    container.innerHTML = "";
+
+
+    popular.forEach(item => {
+
+        container.innerHTML += `
+
+            <div class="activity">
+
+                <div class="activity-icon">
+                    ${item.icon}
+                </div>
+
+                <div class="activity-text">
+
+                    <strong>
+                        ${item.name}
+                    </strong>
+
+                    <p>
+                        ${item.category}
+                        • ${item.room}
+                    </p>
+
+                </div>
+
+                <span class="status
+                    ${item.status === "Available"
+                        ? "available"
+                        : item.status === "In Use"
+                        ? "busy"
+                        : "maintenance"}">
+
+                    ${item.status}
+
+                </span>
+
+            </div>
+        `;
+
+    });
+
+}
+
+
+/* =========================================================
+   ACTIVITY
+========================================================= */
+
+function renderActivity() {
+
+    const container =
+        document.getElementById("recentActivity");
+
+    container.innerHTML = "";
+
+
+    activities.slice(0, 5).forEach(activity => {
+
+        container.innerHTML += `
+
+            <div class="activity">
+
+                <div class="activity-icon">
+                    📌
+                </div>
+
+                <div class="activity-text">
+
+                    <strong>
+                        ${activity.activity}
+                    </strong>
+
+                    <p>
+                        ${activity.equipment}
+                        • ${activity.date}
+                    </p>
+
+                </div>
+
+            </div>
+        `;
+
+    });
+
+
+    const table =
+        document.getElementById("activityTable");
+
+    table.innerHTML = "";
+
+
+    activities.forEach(activity => {
+
+        table.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${activity.activity}
+                </td>
+
+                <td>
+                    ${activity.equipment}
+                </td>
+
+                <td>
+                    ${activity.user}
+                </td>
+
+                <td>
+                    ${activity.date}
+                </td>
+
+                <td>
+
+                    <span class="status available">
+                        ${activity.status}
+                    </span>
+
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+function updateStats() {
+
+    const total =
+        equipment.length;
+
+    const available =
+        equipment.filter(e => e.status === "Available").length;
+
+    const busy =
+        equipment.filter(e => e.status === "In Use").length;
+
+    const maintenance =
+        equipment.filter(e => e.status === "Maintenance").length;
+
+
+    document.getElementById("totalEquipment")
+        .textContent = total;
+
+    document.getElementById("availableEquipment")
+        .textContent = available;
+
+    document.getElementById("busyEquipment")
+        .textContent = busy;
+
+    document.getElementById("maintenanceEquipment")
+        .textContent = maintenance;
+
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+function toggleDarkMode() {
+
+    document.body.classList.toggle("dark");
+
+    const dark =
+        document.body.classList.contains("dark");
+
+    localStorage.setItem("darkMode", dark);
+
+    showToast(
+        dark
+        ? "Dark mode enabled 🌙"
+        : "Light mode enabled ☀️"
+    );
+
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+function showNotifications() {
+
+    showToast(
+        "🔔 You have 3 laboratory notifications."
+    );
+
+}
+
+
+/* =========================================================
+   ABOUT
+========================================================= */
+
+function showAbout() {
+
+    document.getElementById("detailsName").textContent =
+        "LabFind — Smart Laboratory Equipment Finder";
+
+
+    document.getElementById("detailsContent").innerHTML = `
+
+        <div style="text-align:center">
+
+            <div style="font-size:70px">
+                🧪
+            </div>
+
+            <h3>
+                Agile Development Process and DevOps
+            </h3>
+
+            <p style="
+                color:#777;
+                margin-top:12px;
+                line-height:1.7">
+
+                LabFind is a smart laboratory equipment
+                finding system designed to help students,
+                faculty and researchers locate laboratory
+                equipment quickly.
+
+            </p>
+
+        </div>
+
+        <div style="margin-top:25px">
+
+            <h3>Major Features</h3>
+
+            <p style="margin-top:12px;line-height:2">
+
+                🔍 Equipment Search<br>
+                📍 Laboratory Location Tracking<br>
+                🟢 Availability Monitoring<br>
+                📅 Equipment Reservation<br>
+                ⭐ Favorites<br>
+                📊 Dashboard Analytics<br>
+                🔧 Equipment Management<br>
+                🌙 Dark Mode<br>
+                💾 Local Data Storage<br>
+                📱 Responsive Interface
+
+            </p>
+
+        </div>
+
+        <div style="
+            margin-top:20px;
+            padding:15px;
+            background:#eeeaff;
+            border-radius:12px">
+
+            <strong>Project Concept</strong>
+
+            <p style="margin-top:7px;font-size:13px">
+
+                Agile development can be used to
+                continuously improve the system through
+                iterative development, testing and feedback.
+                DevOps practices can support automation,
+                continuous integration, deployment and
+                monitoring.
+
+            </p>
+
+        </div>
+    `;
+
+
+    document
+        .getElementById("detailsModal")
+        .classList.add("show");
+
+}
+
+
+/* =========================================================
+   MODAL CLOSE
+========================================================= */
+
+function closeModal(id) {
+
+    document
+        .getElementById(id)
+        .classList.remove("show");
+
+}
+
+
+window.onclick = function(event) {
+
+    if (event.target.classList.contains("modal")) {
+
+        event.target.classList.remove("show");
+
+    }
+
+};
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(message) {
+
+    const container =
+        document.getElementById("toastContainer");
+
+    const toast =
+        document.createElement("div");
+
+    toast.className = "toast";
+
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+
+    setTimeout(() => {
+
+        toast.remove();
+
+    }, 3000);
+
+}
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+function saveData() {
+
+    localStorage.setItem(
+        "labEquipment",
+        JSON.stringify(equipment)
+    );
+
+    localStorage.setItem(
+        "labBookings",
+        JSON.stringify(bookings)
+    );
+
+    localStorage.setItem(
+        "labActivities",
+        JSON.stringify(activities)
+    );
+
+}
+
+
+function loadData() {
+
+    const savedEquipment =
+        localStorage.getItem("labEquipment");
+
+    const savedBookings =
+        localStorage.getItem("labBookings");
+
+    const savedActivities =
+        localStorage.getItem("labActivities");
+
+
+    if (savedEquipment) {
+
+        equipment =
+            JSON.parse(savedEquipment);
+
+    }
+
+    if (savedBookings) {
+
+        bookings =
+            JSON.parse(savedBookings);
+
+    }
+
+    if (savedActivities) {
+
+        activities =
+            JSON.parse(savedActivities);
+
+    }
+
+
+    const user =
+        localStorage.getItem("labUser");
+
+    if (user) {
+
+        document.getElementById("loginScreen")
+            .style.display = "none";
+
+        document.getElementById("app")
+            .style.display = "block";
+
+        document.getElementById("profileName")
+            .textContent = user;
+
+        document.getElementById("avatar")
+            .textContent =
+            user.charAt(0).toUpperCase();
+
+    }
+
+
+    const dark =
+        localStorage.getItem("darkMode");
+
+    if (dark === "true") {
+
+        document.body.classList.add("dark");
+
+    }
+
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUT
+========================================================= */
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "Escape") {
+
+        document.querySelectorAll(".modal")
+            .forEach(modal =>
+                modal.classList.remove("show")
+            );
+
+    }
+
+});
+
+
+</script>
+
+</body>
+</html>
